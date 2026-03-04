@@ -78,11 +78,19 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
             {/* Article Content */}
             <div className="pt-4 border-t">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                Full Article
+                Article Excerpt
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                 {article.content}
               </p>
+              <a
+                href={article.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
+              >
+                Read full article →
+              </a>
             </div>
           </CardContent>
         </Card>
