@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { zodResponseFormat } from 'openai/helpers/zod';
+import { extract } from '@extractus/article-extractor';
 import { analyzeRequestSchema, articleAnalysisSchema } from '@/lib/schemas';
 
 const openai = new OpenAI({
@@ -23,8 +24,21 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const { title, description, content } = parsed.data;
+  const { title, description, content, url } = parsed.data;
 
+  // Try to extract full article content from URL
+  let fullContent = content;
+  if (url) {
+    try {
+      const extracted = await extract(url);
+      if (extracted?.content) {
+        // Strip HTML tags from extracted content
+        fullContent = extracted.content.replace(/<[^>]*>/g, '').trim();
+      }
+    } catch {
+      // Extraction failed — fall back to truncated content from GNews
+    }
+  }
   try {
     const completion = await openai.chat.completions.parse({
       model: 'gpt-4o-mini',
@@ -38,7 +52,7 @@ export async function POST(request: NextRequest) {
         },
         {
           role: 'user',
-          content: `Title: ${title}\nDescription: ${description}\nContent: ${content}`,
+          content: `Title: ${title}\nDescription: ${description}\nContent: ${fullContent}`,
         },
       ],
       response_format: zodResponseFormat(articleAnalysisSchema, 'article_analysis'),

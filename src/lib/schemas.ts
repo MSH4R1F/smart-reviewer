@@ -9,6 +9,7 @@ export const analyzeRequestSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string(),
   content: z.string(),
+  url: z.string().url().optional(),
 });
 
 export const articleAnalysisSchema = z.object({

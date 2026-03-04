@@ -68,6 +68,7 @@ export function NewsSearch({ onArticleSelected, onArticleAnalyzed, analyzedUrls,
           title: article.title,
           description: article.description,
           content: article.content,
+          url: article.url,
         }),
       });
 
