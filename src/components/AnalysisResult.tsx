@@ -67,10 +67,13 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                   {analysis.summary}
                 </p>
               ) : isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <span>Generating summary</span>
+                  <span className="inline-flex w-6">
+                    <span className="animate-[pulse_1.4s_ease-in-out_infinite]">.</span>
+                    <span className="animate-[pulse_1.4s_ease-in-out_0.2s_infinite]">.</span>
+                    <span className="animate-[pulse_1.4s_ease-in-out_0.4s_infinite]">.</span>
+                  </span>
                 </div>
               ) : null}
             </div>
@@ -78,20 +81,38 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
             {/* Article Content */}
             <div className="pt-4 border-t">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                {analysis?.fullContent ? 'Full Article' : 'Article Excerpt'}
+                {analysis?.fullContent ? 'Full Article' : isLoading ? 'Article Excerpt' : 'Article Excerpt'}
               </h3>
-              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                {analysis?.fullContent ?? article.content}
-              </p>
-              {!analysis?.fullContent && (
-                <a
-                  href={article.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
-                >
-                  Read full article →
-                </a>
+              {isLoading && !analysis?.fullContent ? (
+                <div className="space-y-3">
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {article.content}
+                  </p>
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground italic">
+                    <span>Extracting full article</span>
+                    <span className="inline-flex w-6">
+                      <span className="animate-[pulse_1.4s_ease-in-out_infinite]">.</span>
+                      <span className="animate-[pulse_1.4s_ease-in-out_0.2s_infinite]">.</span>
+                      <span className="animate-[pulse_1.4s_ease-in-out_0.4s_infinite]">.</span>
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {analysis?.fullContent ?? article.content}
+                  </p>
+                  {!analysis?.fullContent && (
+                    <a
+                      href={article.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block mt-3 text-sm font-medium text-primary hover:underline"
+                    >
+                      Read full article →
+                    </a>
+                  )}
+                </>
               )}
             </div>
           </CardContent>
@@ -118,10 +139,10 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                   </span>
                 </>
               ) : isLoading ? (
-                <>
-                  <Skeleton className="h-10 w-32 rounded-full" />
-                  <Skeleton className="h-4 w-24 mt-2" />
-                </>
+                <div className="flex flex-col items-center justify-center space-y-3 py-2">
+                  <div className="h-10 w-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin" />
+                  <span className="text-sm text-muted-foreground">Analyzing sentiment</span>
+                </div>
               ) : null}
             </div>
           </CardHeader>
@@ -155,14 +176,18 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                 )}
               </>
             ) : isLoading ? (
-              <>
+              <div className="space-y-6">
                 <div>
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                     Reasoning
                   </h4>
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
+                  <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                    <span>Analyzing</span>
+                    <span className="inline-flex w-6">
+                      <span className="animate-[pulse_1.4s_ease-in-out_infinite]">.</span>
+                      <span className="animate-[pulse_1.4s_ease-in-out_0.2s_infinite]">.</span>
+                      <span className="animate-[pulse_1.4s_ease-in-out_0.4s_infinite]">.</span>
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -170,12 +195,12 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                     Key Topics
                   </h4>
                   <div className="flex flex-wrap gap-2">
-                    <Skeleton className="h-6 w-16 rounded-full" />
-                    <Skeleton className="h-6 w-20 rounded-full" />
-                    <Skeleton className="h-6 w-14 rounded-full" />
+                    <Skeleton className="h-6 w-16 rounded-full animate-pulse" />
+                    <Skeleton className="h-6 w-20 rounded-full animate-pulse" />
+                    <Skeleton className="h-6 w-14 rounded-full animate-pulse" />
                   </div>
                 </div>
-              </>
+              </div>
             ) : null}
           </CardContent>
         </Card>
