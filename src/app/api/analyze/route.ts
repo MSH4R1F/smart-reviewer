@@ -28,17 +28,30 @@ export async function POST(request: NextRequest) {
 
   // Try to extract full article content from URL
   let fullContent = content;
+  let extractionSource = 'gnews-truncated';
   if (url) {
+    console.log(`[analyze] Attempting extraction from URL: ${url}`);
     try {
       const extracted = await extract(url);
       if (extracted?.content) {
         // Strip HTML tags from extracted content
         fullContent = extracted.content.replace(/<[^>]*>/g, '').trim();
+        extractionSource = 'full-article';
+        console.log(`[analyze] Extraction SUCCESS — ${fullContent.length} chars extracted`);
+      } else {
+        console.log('[analyze] Extraction returned no content — using GNews truncated');
       }
-    } catch {
-      // Extraction failed — fall back to truncated content from GNews
+    } catch (extractErr) {
+      console.log(`[analyze] Extraction FAILED — ${extractErr instanceof Error ? extractErr.message : 'unknown error'}`);
     }
+  } else {
+    console.log('[analyze] No URL provided — using GNews truncated content');
   }
+
+  console.log(`[analyze] Content source: ${extractionSource} | Length: ${fullContent.length} chars`);
+  const userMessage = `Title: ${title}\nDescription: ${description}\nContent: ${fullContent}`;
+  console.log(`[analyze] Sending to OpenAI — prompt length: ${userMessage.length} chars`);
+
   try {
     const completion = await openai.chat.completions.parse({
       model: 'gpt-4o-mini',
@@ -52,11 +65,13 @@ export async function POST(request: NextRequest) {
         },
         {
           role: 'user',
-          content: `Title: ${title}\nDescription: ${description}\nContent: ${fullContent}`,
+          content: userMessage,
         },
       ],
       response_format: zodResponseFormat(articleAnalysisSchema, 'article_analysis'),
     });
+
+    console.log(`[analyze] OpenAI response received`);
 
     const message = completion.choices[0].message;
 
@@ -74,7 +89,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(message.parsed, { status: 200 });
+    return NextResponse.json({ ...message.parsed, fullContent }, { status: 200 });
   } catch (err) {
     const error = err as { status?: number; message?: string };
 
