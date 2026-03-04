@@ -57,11 +57,8 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-base text-muted-foreground leading-relaxed">
-              {article.description}
-            </p>
-            
-            <div className="pt-4 border-t">
+            {/* AI Summary */}
+            <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
                 Summary
               </h3>
@@ -76,6 +73,16 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                   <Skeleton className="h-4 w-3/4" />
                 </div>
               ) : null}
+            </div>
+
+            {/* Article Content */}
+            <div className="pt-4 border-t">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+                Full Article
+              </h3>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                {article.content}
+              </p>
             </div>
           </CardContent>
         </Card>
