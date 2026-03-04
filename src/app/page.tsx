@@ -54,28 +54,30 @@ export default function Home() {
 
       <Separator className="mb-8" />
 
-      {view === 'search' ? (
-        <>
-          {/* Search Section */}
-          <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Search Articles</h2>
-            <NewsSearch
-              onArticleSelected={handleArticleSelected}
-              onArticleAnalyzed={handleAnalysisComplete}
-              analyzedUrls={analyzedUrls}
-              getAnalyzedArticle={getAnalyzedArticle}
-            />
-          </section>
+      {/* Search + History (hidden when viewing detail, but stays mounted to preserve state) */}
+      <div className={view === 'detail' ? 'hidden' : ''}>
+        {/* Search Section */}
+        <section className="mb-8">
+          <h2 className="text-xl font-semibold mb-4">Search Articles</h2>
+          <NewsSearch
+            onArticleSelected={handleArticleSelected}
+            onArticleAnalyzed={handleAnalysisComplete}
+            analyzedUrls={analyzedUrls}
+            getAnalyzedArticle={getAnalyzedArticle}
+          />
+        </section>
 
-          <Separator className="mb-8" />
+        <Separator className="mb-8" />
 
-          {/* History Section */}
-          <section>
-            <h2 className="text-xl font-semibold mb-4">Analysis History</h2>
-            <HistoryTable refreshKey={historyRefreshKey} />
-          </section>
-        </>
-      ) : (
+        {/* History Section */}
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Analysis History</h2>
+          <HistoryTable refreshKey={historyRefreshKey} />
+        </section>
+      </div>
+
+      {/* Detail View */}
+      {view === 'detail' && selectedArticle && (
         <>
           <button
             onClick={handleBack}
@@ -83,10 +85,10 @@ export default function Home() {
           >
             ← Back to search
           </button>
-          <AnalysisResult 
-            article={selectedArticle!} 
-            analysis={pendingAnalysis} 
-            isLoading={isAnalyzing} 
+          <AnalysisResult
+            article={selectedArticle}
+            analysis={pendingAnalysis}
+            isLoading={isAnalyzing}
           />
         </>
       )}
