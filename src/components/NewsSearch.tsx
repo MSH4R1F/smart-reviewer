@@ -9,12 +9,13 @@ import { ArticleCard } from '@/components/ArticleCard';
 import type { GNewsArticle, StoredArticle } from '@/types/index';
 
 interface NewsSearchProps {
+  onArticleSelected: (article: GNewsArticle) => void;
   onArticleAnalyzed: (article: StoredArticle) => void;
   analyzedUrls: Set<string>;
   getAnalyzedArticle: (url: string) => StoredArticle | undefined;
 }
 
-export function NewsSearch({ onArticleAnalyzed, analyzedUrls, getAnalyzedArticle }: NewsSearchProps) {
+export function NewsSearch({ onArticleSelected, onArticleAnalyzed, analyzedUrls, getAnalyzedArticle }: NewsSearchProps) {
   const [query, setQuery] = useState('');
   const [articles, setArticles] = useState<GNewsArticle[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -54,6 +55,8 @@ export function NewsSearch({ onArticleAnalyzed, analyzedUrls, getAnalyzedArticle
   };
 
   const handleAnalyze = async (article: GNewsArticle) => {
+    onArticleSelected(article);
+
     setAnalyzingUrl(article.url);
 
     try {
@@ -139,15 +142,27 @@ export function NewsSearch({ onArticleAnalyzed, analyzedUrls, getAnalyzedArticle
 
       {!isSearching && articles.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {articles.map((article) => (
-            <ArticleCard
-              key={article.url}
-              article={article}
-              onAnalyze={handleAnalyze}
-              isAnalyzing={analyzingUrl === article.url}
-              analyzedArticle={getAnalyzedArticle(article.url)}
-            />
-          ))}
+          {articles.map((article) => {
+            const analyzed = getAnalyzedArticle(article.url);
+            return (
+              <div 
+                key={article.url} 
+                onClickCapture={() => {
+                  if (analyzed) {
+                    onArticleSelected(article);
+                    onArticleAnalyzed(analyzed);
+                  }
+                }}
+              >
+                <ArticleCard
+                  article={article}
+                  onAnalyze={handleAnalyze}
+                  isAnalyzing={analyzingUrl === article.url}
+                  analyzedArticle={analyzed}
+                />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

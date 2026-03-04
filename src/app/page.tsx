@@ -5,19 +5,37 @@ import { Separator } from '@/components/ui/separator';
 import { NewsSearch } from '@/components/NewsSearch';
 import { AnalysisResult } from '@/components/AnalysisResult';
 import { HistoryTable } from '@/components/HistoryTable';
-import type { StoredArticle } from '@/types/index';
+import type { GNewsArticle, StoredArticle } from '@/types/index';
 
 export default function Home() {
-  const [currentAnalysis, setCurrentAnalysis] = useState<StoredArticle | null>(null);
+  const [view, setView] = useState<'search' | 'detail'>('search');
+  const [selectedArticle, setSelectedArticle] = useState<GNewsArticle | null>(null);
+  const [pendingAnalysis, setPendingAnalysis] = useState<StoredArticle | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
   const [analyzedArticles, setAnalyzedArticles] = useState<StoredArticle[]>([]);
 
-  const onArticleAnalyzed = (article: StoredArticle) => {
-    setAnalyzedArticles((prev) => [...prev, article]);
-    setCurrentAnalysis(article);
+  const handleArticleSelected = (article: GNewsArticle) => {
+    setSelectedArticle(article);
+    setPendingAnalysis(null);
+    setIsAnalyzing(true);
+    setView('detail');
+  };
+
+  const handleAnalysisComplete = (stored: StoredArticle) => {
+    setPendingAnalysis(stored);
+    setIsAnalyzing(false);
+    setAnalyzedArticles((prev) => [...prev, stored]);
     setHistoryRefreshKey((prev) => prev + 1);
   };
 
+  const handleBack = () => {
+    setView('search');
+    setSelectedArticle(null);
+    setPendingAnalysis(null);
+    setIsAnalyzing(false);
+  };
   const analyzedUrls = new Set(analyzedArticles.map((a) => a.url));
 
   const getAnalyzedArticle = (url: string) => {
@@ -36,34 +54,42 @@ export default function Home() {
 
       <Separator className="mb-8" />
 
-      {/* Search Section */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Search Articles</h2>
-        <NewsSearch
-          onArticleAnalyzed={onArticleAnalyzed}
-          analyzedUrls={analyzedUrls}
-          getAnalyzedArticle={getAnalyzedArticle}
-        />
-      </section>
-
-      {currentAnalysis !== null && (
+      {view === 'search' ? (
         <>
-          <Separator className="mb-8" />
-          {/* Analysis Result Section */}
+          {/* Search Section */}
           <section className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Analysis Result</h2>
-            <AnalysisResult analysis={currentAnalysis} />
+            <h2 className="text-xl font-semibold mb-4">Search Articles</h2>
+            <NewsSearch
+              onArticleSelected={handleArticleSelected}
+              onArticleAnalyzed={handleAnalysisComplete}
+              analyzedUrls={analyzedUrls}
+              getAnalyzedArticle={getAnalyzedArticle}
+            />
+          </section>
+
+          <Separator className="mb-8" />
+
+          {/* History Section */}
+          <section>
+            <h2 className="text-xl font-semibold mb-4">Analysis History</h2>
+            <HistoryTable refreshKey={historyRefreshKey} />
           </section>
         </>
+      ) : (
+        <>
+          <button
+            onClick={handleBack}
+            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+          >
+            ← Back to search
+          </button>
+          <AnalysisResult 
+            article={selectedArticle!} 
+            analysis={pendingAnalysis} 
+            isLoading={isAnalyzing} 
+          />
+        </>
       )}
-
-      <Separator className="mb-8" />
-
-      {/* History Section */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Analysis History</h2>
-        <HistoryTable refreshKey={historyRefreshKey} />
-      </section>
     </main>
   );
 }
