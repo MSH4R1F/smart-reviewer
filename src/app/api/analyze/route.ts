@@ -55,13 +55,13 @@ export async function POST(request: NextRequest) {
   try {
     const completion = await openai.chat.completions.parse({
       model: 'gpt-4o-mini',
-      max_tokens: 1024,
-      temperature: 0.3,
+      max_tokens: 2048,
+      temperature: 0.5,
       messages: [
         {
           role: 'system',
           content:
-            'You are a news article analyst. Analyze the given article and provide a summary, sentiment analysis, and key topics. If content is limited or truncated, provide the best analysis possible with available information. Do not fabricate details.',
+            'You are a news article analyst. For the summary field, write TWO full paragraphs (each 3-5 sentences) covering the key facts, broader context, and implications. Also provide sentiment analysis and key topics. If content is limited or truncated, provide the best analysis possible with available information. Do not fabricate details.',
         },
         {
           role: 'user',

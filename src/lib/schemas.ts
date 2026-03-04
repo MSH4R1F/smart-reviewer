@@ -13,7 +13,7 @@ export const analyzeRequestSchema = z.object({
 });
 
 export const articleAnalysisSchema = z.object({
-  summary: z.string().describe('2-3 sentence summary of the article'),
+  summary: z.string().describe('Two detailed paragraphs summarizing the article. Cover the key facts, context, and implications.'),
   sentiment: z.enum(['positive', 'negative', 'neutral', 'mixed']).describe('Overall sentiment of the article'),
   sentimentScore: z.number().min(0).max(1).describe('Confidence score from 0.0 to 1.0'),
   sentimentReasoning: z.string().describe('One sentence explaining the sentiment classification'),
