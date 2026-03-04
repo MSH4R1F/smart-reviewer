@@ -63,9 +63,11 @@ export function AnalysisResult({ article, analysis, isLoading }: AnalysisResultP
                 Summary
               </h3>
               {analysis ? (
-                <p className="text-base leading-relaxed">
-                  {analysis.summary}
-                </p>
+                <div className="text-base leading-relaxed space-y-3">
+                  {analysis.summary.split('\n').filter(Boolean).map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                </div>
               ) : isLoading ? (
                 <div className="flex items-center gap-1 text-sm text-muted-foreground">
                   <span>Generating summary</span>
