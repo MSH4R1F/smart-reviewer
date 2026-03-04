@@ -104,7 +104,7 @@ export function NewsSearch({ onArticleSelected, onArticleAnalyzed, analyzedUrls,
       }
 
       toast.success('Article analyzed successfully!');
-      onArticleAnalyzed(storedData);
+      onArticleAnalyzed({ ...storedData, fullContent: analysisData.fullContent });
     } catch {
       toast.error('Analysis failed. Please try again.');
     } finally {
