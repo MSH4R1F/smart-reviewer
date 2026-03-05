@@ -4,7 +4,7 @@ A single-page web app that fetches real-time news articles, uses AI to generate 
 
 ## Live Demo
 
-[Live Demo](https://smart-reviewer.vercel.app) *(deploy URL to be added after Vercel setup)*
+[Live Demo](https://smart-reviewer-lemon.vercel.app) *(deploy URL to be added after Vercel setup)*
 
 ---
 
